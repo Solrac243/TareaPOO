@@ -15,7 +15,8 @@ public class AdministradorBaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table equipos (serie integer primary key, descripcion text)");
+        //DDL
+        db.execSQL("create table equipos (serie integer primary key, descripcion text, valor integer)");
         Log.d("TAG_", "Creacion MER");
 
     }

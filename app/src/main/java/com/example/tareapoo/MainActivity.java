@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -144,25 +145,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void crearBD() {
         AdministradorBaseDatos abds = new AdministradorBaseDatos(MainActivity.this, "BDPrueba", null, 1);
-        try {
-            SQLiteDatabase miBD = abds.getWritableDatabase();
+        try {SQLiteDatabase miBD = abds.getWritableDatabase();
 
             if (miBD != null) {
+                //Forma clasica DML
+                String[] parametros = new String[3];
+                parametros[0] = tilSerie.getEditText().getText().toString();
+                parametros[1] = tilDescripcion.getEditText().getText().toString();
+                parametros[2] = tilValor.getEditText().getText().toString();
+                miBD.execSQL("insert into equipos (serie,descripcion)" + "values(?,?,?)",parametros);
 
-                miBD.execSQL("insert into equipos (serie,descripcion) values(111,'Equipo de usuario')");
+                Cursor c = miBD.rawQuery("Select * from equipos order by valor desc",null);
+
+                if(c.moveToFirst()){
+                    Log.d("TAG_", "Registros obtenidos :" + c.getCount());
+                    do{
+                        Log.d("TAG_","_____________________________");
+                        Log.d("TAG_","Serie " + c.getInt(0));
+                        Log.d("TAG_","Descripcion " + c.getString(1));
+                        Log.d("TAG_","Valor " + c.getInt(2));
+                    }while(c.moveToNext());
+                }else{
+                    Toast.makeText(this, "No hay registros para mostrar", Toast.LENGTH_SHORT).show();
+                }
             }
 
+            /*
+            //Forma API Android
             ContentValues registro = new ContentValues();
             registro.put("serie", 222);
             registro.put("descripcion", "Equipo de usuario 2");
             miBD.insert("equipos",null , registro);
+            */
 
             miBD.close();
+            crearBD();
 
         } catch (Exception ex) {
             Log.e("TAG_", ex.toString());
-
-        } finally {
 
         }
     }
